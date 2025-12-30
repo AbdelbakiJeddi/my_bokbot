@@ -1,6 +1,7 @@
 #include "bumperbot_firmware/bumperbot_interface.hpp"
 #include <hardware_interface/types/hardware_interface_type_values.hpp>
 #include <pluginlib/class_list_macros.hpp>
+#include <hardware_interface/hardware_component_interface.hpp>
 
 
 namespace bumperbot_firmware
@@ -27,33 +28,44 @@ BumperbotInterface::~BumperbotInterface()
 }
 
 
-CallbackReturn BumperbotInterface::on_init(const hardware_interface::HardwareInfo &hardware_info)
+CallbackReturn BumperbotInterface::on_init(
+  const hardware_interface::HardwareComponentInterfaceParams & params)
 {
-  CallbackReturn result = hardware_interface::SystemInterface::on_init(hardware_info);
+  // Call new base implementation (this sets info_)
+  auto result = hardware_interface::SystemInterface::on_init(params);
   if (result != CallbackReturn::SUCCESS)
   {
     return result;
   }
-
+  
+  // Get the port from the hardware parameters
   try
   {
+    // Use info_ or hw_info here; info_ is the protected member from SystemInterface
     port_ = info_.hardware_parameters.at("port");
+    // Alternatively:
+    // port_ = hw_info.hardware_parameters.at("port");
   }
-  catch (const std::out_of_range &e)
+  catch (const std::out_of_range &)
   {
-    RCLCPP_FATAL(rclcpp::get_logger("BumperbotInterface"), "No Serial Port provided! Aborting");
+    RCLCPP_FATAL(
+      rclcpp::get_logger("BumperbotInterface"),
+      "No Serial Port provided! Aborting");
     return CallbackReturn::FAILURE;
   }
 
-  velocity_commands_.reserve(info_.joints.size());
-  position_states_.reserve(info_.joints.size());
-  velocity_states_.reserve(info_.joints.size());
-  last_run_ = rclcpp::Clock().now();
+  // Prepare vectors for all joints
+  const auto n_joints = info_.joints.size();
+  velocity_commands_.reserve(n_joints);
+  position_states_.reserve(n_joints);
+  velocity_states_.reserve(n_joints);
+  velocity_commands_.resize(n_joints, 0.0);
+  position_states_.resize(n_joints, 0.0);
+  velocity_states_.resize(n_joints, 0.0);
 
+  last_run_ = rclcpp::Clock().now();
   return CallbackReturn::SUCCESS;
 }
-
-
 std::vector<hardware_interface::StateInterface> BumperbotInterface::export_state_interfaces()
 {
   std::vector<hardware_interface::StateInterface> state_interfaces;
