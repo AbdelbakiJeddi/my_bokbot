@@ -8,10 +8,7 @@ find_package(rclpy REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
-find_package(nav_msgs REQUIRED)
-find_package(tf2_ros REQUIRED)
-find_package(tf2 REQUIRED)
-find_package(Eigen3 REQUIRED)
+
 
 include_directories(include)
 include_directories(${EIGEN3_INCLUDE_DIR})
@@ -31,9 +28,5 @@ install(
   DESTINATION share/${PROJECT_NAME}
 )
 
-install(PROGRAMS
-  ${PROJECT_NAME}/twist_relay.py
-  DESTINATION lib/${PROJECT_NAME}
-)
 
 ament_package()
