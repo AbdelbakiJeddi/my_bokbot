@@ -1,7 +1,7 @@
 #include "bumperbot_firmware/bumperbot_interface.hpp"
 #include <hardware_interface/types/hardware_interface_type_values.hpp>
 #include <pluginlib/class_list_macros.hpp>
-
+#include <hardware_interface/hardware_component_interface.hpp>
 
 namespace bumperbot_firmware
 {
@@ -27,7 +27,7 @@ BumperbotInterface::~BumperbotInterface()
 }
 
 
-CallbackReturn BumperbotInterface::on_init(const hardware_interface::HardwareInfo &hardware_info)
+CallbackReturn BumperbotInterface::on_init(const hardware_interface::HardwareInfo & hardware_info)
 {
   CallbackReturn result = hardware_interface::SystemInterface::on_init(hardware_info);
   if (result != CallbackReturn::SUCCESS)

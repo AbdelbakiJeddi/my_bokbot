@@ -1,11 +1,18 @@
 import os
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
+from launch.conditions import IfCondition
+from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 
 
 def generate_launch_description():
+    run_rviz = DeclareLaunchArgument(
+        'run_rviz',
+        default_value='false',
+        description='Whether to run RViz'
+    )
 
     hardware_interface = IncludeLaunchDescription(
         os.path.join(
@@ -35,18 +42,13 @@ def generate_launch_description():
             "rviz",
             "display.rviz"
         )],
+        condition=IfCondition(LaunchConfiguration('run_rviz'))
     )
 
-    twist_converter = Node(
-        package="bumperbot_firmware",
-        executable="velocityconverter.py",
-        name="velocity_converter",
-        output="screen",
-    )
+
         
     return LaunchDescription([
         hardware_interface,
         controller,
-        twist_converter,
         rviz
     ])
