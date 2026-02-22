@@ -3,7 +3,7 @@
   <xacro:include filename="inertial_macros.xacro"/>
   <xacro:property name="base_length" value="0.20" />
   <xacro:property name="base_width" value="0.30" />
-  <xacro:property name="base_height" value="0.10" />
+  <xacro:property name="base_height" value="0.30" />
   <xacro:property name="base_mass" value="1.0" />
 
   <xacro:property name="wheel_mass" value="0.3" />
@@ -11,7 +11,7 @@
   <xacro:property name="wheel_length" value="0.02" />
 
   <xacro:property name="caster_wheel_mass" value="0.1" />
-  <xacro:property name="caster_wheel_radius" value="0.015" />
+  <xacro:property name="caster_wheel_radius" value="${wheel_radius / 2.0}" />
 
   <!-- BASE FOOTPRINT LINK -->
   <link name="base_footprint" />
@@ -155,6 +155,24 @@
     </xacro:inertial_cylinder>
   </link>
 
+  <!-- CAMERA LINK -->
+  <link name="camera_link">
+    <visual>
+      <geometry>
+        <box size="0.05 0.05 0.05"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="0.05 0.05 0.05"/>
+      </geometry>
+    </collision>
+    <xacro:inertial_box mass="0.1" x="0.05" y="0.05" z="0.05">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </xacro:inertial_box>
+  </link>
+
   <!-- JOINTS -->
   <joint name="base_joint" type="fixed">
     <parent link="base_footprint" />
@@ -199,6 +217,13 @@
     <child link ="laser_link"/>
     <axis xyz="0 0 0" />
     <origin xyz="0 0 ${base_height + 0.057 / 2.0}" rpy="0 0 0"/>
+  </joint>
+
+  <joint name="camera_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="camera_link"/>
+    <!-- Positioned near the front edge of the top plate, facing forward -->
+    <origin xyz="${base_length/2} 0 ${base_height - 0.1}" rpy="0 0.5235987756 0"/>
   </joint>
 
 </robot>

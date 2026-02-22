@@ -16,7 +16,8 @@ def generate_launch_description():
 
     use_sim_time_arg = DeclareLaunchArgument(
         "use_sim_time",
-        default_value="true"
+        default_value="true",
+        description = "Use simulation time"
     )
 
     nav2_controller_server = Node(
@@ -27,7 +28,7 @@ def generate_launch_description():
             os.path.join(
                 myrobot_navigation_pkg,
                 "config",
-                "controller_server_1.yaml"),
+                "controller_server.yaml"),
             {"use_sim_time": use_sim_time}
         ],
     )

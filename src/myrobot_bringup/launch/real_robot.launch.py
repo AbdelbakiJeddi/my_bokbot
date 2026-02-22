@@ -1,27 +1,20 @@
 import os
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
-from launch.conditions import IfCondition, UnlessCondition
+from launch.conditions import IfCondition
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 
 
 def generate_launch_description():
-
-    use_slam_arg = DeclareLaunchArgument(
-        "use_slam",
-        default_value="true"
+    
+    use_sim_time = LaunchConfiguration('use_sim_time')
+    use_sim_time_arg = DeclareLaunchArgument(
+        'use_sim_time',
+        default_value='false',
+        description='Use simulation (Gazebo) clock if true'
     )
-
-    run_rviz_arg = DeclareLaunchArgument(
-        'run_rviz',
-        default_value='true',
-        description='Whether to run RViz'
-    )
-
-    run_rviz = LaunchConfiguration('run_rviz')
-    use_slam = LaunchConfiguration("use_slam")
 
     hardware_interface = IncludeLaunchDescription(
         os.path.join(
@@ -29,18 +22,9 @@ def generate_launch_description():
             "launch",
             "hardware_interface.launch.py"
         ),
-    )
-
-    laser_driver = Node(
-            package="rplidar_ros",
-            executable="rplidar_composition",
-            name="rplidar_node",
-            parameters=[os.path.join(
-                get_package_share_directory("myrobot_bringup"),
-                "config",
-                "rplidar_a1.yaml"
-            )],
-            output="screen",
+        launch_arguments={
+            "use_sim_time": use_sim_time
+        }.items()
     )
 
     controller = IncludeLaunchDescription(
@@ -50,45 +34,26 @@ def generate_launch_description():
             "controller.launch.py"
         ),
         launch_arguments={
-            "use_sim_time": "False"
+            "use_sim_time": use_sim_time
         }.items()
     )
 
-    #imu_driver_node = Node(
-    #    package="myrobot_firmware",
-    #    executable="mpu6050_driver.py"
-    #)
 
-    rviz = Node(
-        package="rviz2",
-        executable="rviz2",
-        name="rviz2",
-        output="screen",
-        arguments=["-d", os.path.join(
-            get_package_share_directory("myrobot_description"),
-            "rviz",
-            "display.rviz"
-        )],
-        condition=IfCondition(run_rviz)
-    )
-
-    slam = IncludeLaunchDescription(
+    navigation_blind = IncludeLaunchDescription(
         os.path.join(
-            get_package_share_directory("myrobot_mapping"),
+            get_package_share_directory("myrobot_navigation"),
             "launch",
-            "slam.launch.py"
+            "navigation_blind.launch.py"
         ),
-        condition=IfCondition(use_slam)
+        launch_arguments={
+            "use_sim_time": use_sim_time,
+            "map_name": "eurobot_2026"
+        }.items()
     )
         
     return LaunchDescription([
-
-        run_rviz_arg,
-        use_slam_arg,
+        use_sim_time_arg,
         hardware_interface,
-        #laser_driver,
         controller,
-        #imu_driver_node,
-        #slam,
-        #rviz
+        navigation_blind,
     ])

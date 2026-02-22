@@ -1,59 +1,42 @@
 controller_server:
   ros__parameters:
-    use_sim_time: true
     controller_frequency: 20.0
     min_x_velocity_threshold: 0.001
     min_y_velocity_threshold: 0.5
     min_theta_velocity_threshold: 0.001
-    failure_tolerance: 0.3
-    progress_checker_plugin: "progress_checker"
-    goal_checker_plugins: ["general_goal_checker"]
+    progress_checker_plugins: ["progress_checker"]
+    goal_checker_plugins: ["goal_checker"]
     controller_plugins: ["FollowPath"]
     odom_topic: /myrobot_controller/odom
 
-    # Progress checker parameters
     progress_checker:
       plugin: "nav2_controller::SimpleProgressChecker"
-      required_movement_radius: 0.5
+      required_movement_radius: 0.05
       movement_time_allowance: 10.0
-    # Goal checker parameters
-    general_goal_checker:
-      plugin: "nav2_controller::SimpleGoalChecker"
-      xy_goal_tolerance: 0.25
-      yaw_goal_tolerance: 0.25
-      stateful: True
-    
-    # PD Motion Planner parameters
-    # FollowPath:
-    #   plugin: "myrobot_motion::PDMotionPlanner"
-    #   kp: 2.0
-    #   kd: 0.1
-    #   max_linear_velocity: 0.3
-    #   max_angular_velocity: 1.0
-    #   step_size: 0.1
 
-    # Pure Pursuit parameters
-    # PurePursuit:
-    #   plugin: "myrobot_motion::PurePursuit"
-    #   look_ahead_distance: 0.5
-    #   max_linear_velocity: 0.3
-    #   max_angular_velocity: 1.0
-    
-    # RPP parameters
+    goal_checker:
+      plugin: "nav2_controller::SimpleGoalChecker"
+      xy_goal_tolerance: 0.05
+      yaw_goal_tolerance: 0.05
+      stateful: True
+
     FollowPath:
       plugin: "nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController"
-      max_linear_vel: 0.5
-      min_linear_vel: -0.5
-      max_angular_vel: 2.5
-      min_angular_vel: -2.5
+      max_linear_vel: 2.5
+      min_linear_vel: -2.5
+      max_angular_vel: 8.5
+      min_angular_vel: -8.5
+      max_linear_accel: 2.0
+      max_linear_decel: -2.0
+      max_angular_accel: 8.0
+      max_angular_decel: -8.0
       lookahead_dist: 0.6
-      min_lookahead_dist: 0.3
+      min_lookahead_dist: 0.15
       max_lookahead_dist: 0.9
       lookahead_time: 1.5
-      rotate_to_heading_angular_vel: 1.8
-      transform_tolerance: 0.2
+      rotate_to_heading_angular_vel: 1.0
       use_velocity_scaled_lookahead_dist: false
-      min_approach_linear_velocity: 0.05
+      min_approach_linear_velocity: 0.1
       approach_velocity_scaling_dist: 1.0
       use_collision_detection: true
       max_allowed_time_to_collision_up_to_carrot: 1.0
@@ -65,13 +48,11 @@ controller_server:
       curvature_lookahead_dist: 1.0
       use_rotate_to_heading: true
       rotate_to_heading_min_angle: 0.785
-      max_angular_accel: 3.2
-      max_robot_pose_search_dist: 10.0
       interpolate_curvature_after_goal: false
       cost_scaling_dist: 0.3
       cost_scaling_gain: 1.0
-      inflation_cost_scaling_factor: 3.0
-    
+      inflation_cost_scaling_factor: 5.0
+      use_dynamic_window: false
 
 local_costmap:
   local_costmap:
@@ -85,12 +66,12 @@ local_costmap:
       width: 3
       height: 3
       resolution: 0.05
-      robot_radius: 0.1
+      robot_radius: 0.16
       plugins: ["obstacle_layer", "inflation_layer"]
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
-        cost_scaling_factor: 3.0
-        inflation_radius: 0.55
+        cost_scaling_factor: 5.0
+        inflation_radius: 0.05
       obstacle_layer:
         plugin: "nav2_costmap_2d::ObstacleLayer"
         enabled: True

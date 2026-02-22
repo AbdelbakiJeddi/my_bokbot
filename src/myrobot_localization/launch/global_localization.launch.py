@@ -15,12 +15,14 @@ def generate_launch_description():
 
     map_name_arg = DeclareLaunchArgument(
         "map_name",
-        default_value="eurobot_2026"
+        default_value="eurobot_2026",
+        description = "Name of the map to load "
     )
 
     use_sim_time_arg = DeclareLaunchArgument(
         "use_sim_time",
-        default_value="true"
+        default_value="true",
+        description = "Use simulation time "
     )
 
     amcl_config_arg = DeclareLaunchArgument(

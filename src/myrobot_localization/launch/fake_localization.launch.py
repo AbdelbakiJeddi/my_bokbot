@@ -4,7 +4,7 @@ from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution, PythonExpression
 from launch_ros.actions import Node
 
 
@@ -16,22 +16,24 @@ def generate_launch_description():
 
     map_name_arg = DeclareLaunchArgument(
         "map_name",
-        default_value="eurobot_2026"
+        default_value="eurobot_2026",
+        description = "Name of the map to load (without .yaml extension)"
+
     )
 
     use_sim_time_arg = DeclareLaunchArgument(
         "use_sim_time",
-        default_value="true"
+        default_value="false",
+        description = "Use simulation time"
     )
+
 
     map_path = PathJoinSubstitution([
         get_package_share_directory("myrobot_mapping"),
         "maps",
-        PathJoinSubstitution([map_name, ".yaml"]) # This might need fix depending on how map_name is used
+        PathJoinSubstitution([map_name, ".yaml"]) 
     ])
     
-    # Correctly handle map file path with extension
-    # We use PythonExpression to ensure .yaml is appended even if map_name comes from launch config
     map_yaml_file = PathJoinSubstitution([
         get_package_share_directory("myrobot_mapping"),
         "maps",
@@ -44,18 +46,29 @@ def generate_launch_description():
         name="map_server",
         output="screen",
         parameters=[
-            {"yaml_filename": map_yaml_file}, # Hardcoded for reliability in this specific case
+            {"yaml_filename": map_yaml_file}, 
             {"use_sim_time": use_sim_time}
         ],
     )
 
-    # Static transform between map and odom (Fake Localization)
     static_tf_node = Node(
         package="tf2_ros",
         executable="static_transform_publisher",
         name="static_map_odom_publisher",
         output="screen",
-        arguments=["0", "0", "0", "0", "0", "0", "map", "odom"]
+        arguments=["0", "0", "0", "0", "0", "0", "map", "odom"],
+        parameters=[{"use_sim_time": use_sim_time}]
+    )
+
+    robot_localization_ekf = Node(
+        package="robot_localization",
+        executable="ekf_node",
+        name="ekf_filter_node",
+        output="screen",
+        parameters=[
+            os.path.join(get_package_share_directory("myrobot_localization"), "config", "ekf.yaml"),
+            {"use_sim_time": use_sim_time}
+        ],
     )
 
     nav2_lifecycle_manager = Node(
@@ -75,5 +88,6 @@ def generate_launch_description():
         use_sim_time_arg,
         nav2_map_server,
         static_tf_node,
+        robot_localization_ekf,
         nav2_lifecycle_manager,
     ])

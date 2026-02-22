@@ -13,21 +13,28 @@ from launch_ros.parameter_descriptions import ParameterValue
 
 
 def generate_launch_description():
+    
     myrobot_description = get_package_share_directory("myrobot_description")
 
     model_arg = DeclareLaunchArgument(
-        name="model", default_value=os.path.join(
-                myrobot_description, "urdf", "robot", "my_robot.urdf.xacro"
-            ),
+        name="model", 
+        default_value=os.path.join(
+            myrobot_description, "urdf", "robot", "my_robot.urdf.xacro"
+        ),
         description="Absolute path to robot urdf file"
     )
 
-    world_name_arg = DeclareLaunchArgument(name="world_name", default_value="arena_world")
+    world_name_arg = DeclareLaunchArgument(
+        name="world_name", 
+        default_value="arena_world",
+        description = "Name of the world file "
+
+    )
 
     world_path = PathJoinSubstitution([
             myrobot_description,
             "worlds",
-            PythonExpression(expression=["'", LaunchConfiguration("world_name"), "'", " + '.sdf'"])
+            PythonExpression(["'", LaunchConfiguration("world_name"), ".sdf'"])
         ]
     )
 

@@ -2,11 +2,19 @@ import os
 from launch import LaunchDescription
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
-from launch.substitutions import Command
+from launch.actions import DeclareLaunchArgument
+from launch.substitutions import Command, LaunchConfiguration
 from ament_index_python.packages import get_package_share_directory
 
 
 def generate_launch_description():
+    
+    use_sim_time = LaunchConfiguration('use_sim_time')
+    use_sim_time_arg = DeclareLaunchArgument(
+        'use_sim_time',
+        default_value='false',
+        description='Use simulation (Gazebo) clock if true'
+    )
 
     robot_description = ParameterValue(
         Command(
@@ -35,7 +43,7 @@ def generate_launch_description():
         executable="ros2_control_node",
         parameters=[
             {"robot_description": robot_description,
-             "use_sim_time": False},
+             "use_sim_time": use_sim_time},
             os.path.join(
                 get_package_share_directory("myrobot_controller"),
                 "config",

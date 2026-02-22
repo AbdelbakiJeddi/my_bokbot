@@ -18,7 +18,13 @@ def generate_launch_description():
 
     run_rviz = LaunchConfiguration('run_rviz')
 
-
+    use_sim_time = LaunchConfiguration('use_sim_time')
+    use_sim_time_arg = DeclareLaunchArgument(
+        'use_sim_time',
+        default_value='true',
+        description='Use simulation (Gazebo) clock if true'
+    )
+    
     gazebo = IncludeLaunchDescription(
         os.path.join(
             get_package_share_directory("myrobot_description"),
@@ -34,7 +40,7 @@ def generate_launch_description():
             "controller.launch.py"
         ),
         launch_arguments={
-            "use_sim_time": "True"
+            "use_sim_time": use_sim_time
         }.items()
     )
 
@@ -48,10 +54,10 @@ def generate_launch_description():
             "rviz",
             "nav2_default_view.rviz"
         )],
+        parameters=[{"use_sim_time": use_sim_time}],
         condition=IfCondition(run_rviz)
     )
 
-    # Launch Blind Navigation (includes fake_localization)
     navigation_blind = IncludeLaunchDescription(
         os.path.join(
             get_package_share_directory("myrobot_navigation"),
@@ -59,13 +65,14 @@ def generate_launch_description():
             "navigation_blind.launch.py"
         ),
         launch_arguments={
-            "use_sim_time": "True",
+            "use_sim_time": use_sim_time,
             "map_name": "eurobot_2026"
         }.items()
     )
         
     return LaunchDescription([
         run_rviz_arg,
+        use_sim_time_arg,
         gazebo,
         controller,
         rviz,

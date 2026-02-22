@@ -11,10 +11,6 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
 
-    # Arguments
-    map_name = LaunchConfiguration("map_name")
-    use_sim_time = LaunchConfiguration("use_sim_time")
-
     map_name_arg = DeclareLaunchArgument(
         "map_name",
         default_value="eurobot_2026",
@@ -27,14 +23,20 @@ def generate_launch_description():
         description="Use simulation time if true"
     )
 
-    # Package directories
+    map_name = LaunchConfiguration("map_name")
+
+    use_sim_time = LaunchConfiguration("use_sim_time")
+
     myrobot_navigation_pkg = get_package_share_directory("myrobot_navigation")
     myrobot_localization_pkg = get_package_share_directory("myrobot_localization")
 
-    # Include Fake Localization (starts Map Server + Static TF)
-    fake_localization_launch = IncludeLaunchDescription(
+    local_localization_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(myrobot_localization_pkg, "launch", "fake_localization.launch.py")
+            os.path.join(
+                myrobot_localization_pkg,
+                "launch",
+                "local_localization.launch.py"
+            )
         ),
         launch_arguments={
             "map_name": map_name, 
@@ -42,17 +44,18 @@ def generate_launch_description():
         }.items()
     )
 
-    # Nav2 Lifecycle Nodes
-    lifecycle_nodes = ["controller_server", "planner_server", "smoother_server", "bt_navigator", "behavior_server"]
-
-    # --- Nav2 Nodes ---
+    lifecycle_nodes = ["controller_server", "planner_server", "bt_navigator", "behavior_server"]
 
     nav2_controller_server = Node(
         package="nav2_controller",
         executable="controller_server",
         output="screen",
         parameters=[
-            os.path.join(myrobot_navigation_pkg, "config", "controller_server_blind.yaml"),
+            os.path.join(
+                myrobot_navigation_pkg,
+                "config", 
+                "controller_server_blind.yaml"
+            ),
             {"use_sim_time": use_sim_time}
         ],
     )
@@ -63,7 +66,11 @@ def generate_launch_description():
         name="planner_server",
         output="screen",
         parameters=[
-            os.path.join(myrobot_navigation_pkg, "config", "planner_server_blind.yaml"),
+            os.path.join(
+                myrobot_navigation_pkg,
+                "config", 
+                "planner_server_blind.yaml"
+            ),
             {"use_sim_time": use_sim_time}
         ],
     )
@@ -74,7 +81,11 @@ def generate_launch_description():
         name="behavior_server",
         output="screen",
         parameters=[
-            os.path.join(myrobot_navigation_pkg, "config", "behavior_server.yaml"),
+            os.path.join(
+                myrobot_navigation_pkg,
+                "config", 
+                "behavior_server.yaml"
+            ),
             {"use_sim_time": use_sim_time}
         ],
     )
@@ -85,21 +96,15 @@ def generate_launch_description():
         name="bt_navigator",
         output="screen",
         parameters=[
-            os.path.join(myrobot_navigation_pkg, "config", "bt_navigator.yaml"),
+            os.path.join(
+                myrobot_navigation_pkg,
+                "config", 
+                "bt_navigator.yaml"
+            ),
             {"use_sim_time": use_sim_time}
         ],
     )
 
-    nav2_smoother_server = Node(
-        package="nav2_smoother",
-        executable="smoother_server",
-        name="smoother_server",
-        output="screen",
-        parameters=[
-            os.path.join(myrobot_navigation_pkg, "config", "smoother_server.yaml"),
-            {"use_sim_time": use_sim_time}
-        ],
-    )
 
     nav2_lifecycle_manager = Node(
         package="nav2_lifecycle_manager",
@@ -116,10 +121,9 @@ def generate_launch_description():
     return LaunchDescription([
         map_name_arg,
         use_sim_time_arg,
-        fake_localization_launch,
+        local_localization_launch,
         nav2_controller_server,
         nav2_planner_server,
-        nav2_smoother_server,
         nav2_behaviors,
         nav2_bt_navigator,
         nav2_lifecycle_manager,

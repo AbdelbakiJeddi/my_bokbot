@@ -1,6 +1,6 @@
 import os
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, TimerAction
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
 from launch.conditions import IfCondition, UnlessCondition
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
@@ -12,7 +12,8 @@ def generate_launch_description():
 
     use_slam_arg = DeclareLaunchArgument(
         "use_slam",
-        default_value="true"
+        default_value="true",
+        description="Whether to run SLAM (if false, use localization stack)"
     )
 
     run_rviz_arg = DeclareLaunchArgument(
@@ -88,5 +89,8 @@ def generate_launch_description():
         use_slam_arg,
         gazebo,
         controller,
+        #slam,
+        #localization, 
+        #navigation,
         rviz
     ])
