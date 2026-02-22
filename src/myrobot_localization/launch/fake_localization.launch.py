@@ -88,6 +88,6 @@ def generate_launch_description():
         use_sim_time_arg,
         nav2_map_server,
         static_tf_node,
-        robot_localization_ekf,
+        #robot_localization_ekf,
         nav2_lifecycle_manager,
     ])
