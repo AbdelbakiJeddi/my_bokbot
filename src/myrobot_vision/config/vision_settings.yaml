@@ -1,0 +1,17 @@
+global:
+  horizontal_fov_deg: 60.0  # matches 1.047 rad in Gazebo
+  image_width: 350
+  image_height: 300
+  aruco_dictionary: "DICT_4X4_50"
+
+cameras:
+  - name: "front_camera"
+    image_topic: "/front_camera/image_raw"
+    marker_length_m: 0.04  # 40mm ArUco markers
+
+arucos:
+  # ArUco markers on crates (only these IDs are processed by aruco_detector).
+  - id: 36   # crate_blue
+    marker_length_m: 0.04
+  - id: 47   # crate_yellow
+    marker_length_m: 0.04
