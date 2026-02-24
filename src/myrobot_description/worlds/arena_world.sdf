@@ -73,20 +73,21 @@
       <uri>model://mat</uri>
       <pose>0 0 0 0 0 0</pose>
     </include>
-
+    <include>
+      <uri>model://arena3D</uri>
+      <pose>1.026 1.5255 0 0 0 3.14</pose>
+    </include>
+    <!-- groupe 1 -->
     <include>
       <uri>model://crate_blue</uri>
       <name>crate_blue_001</name>
       <pose>-0.200000 0.275000 0.050000 0 0 0.000000</pose>
     </include>
-
     <include>
       <uri>model://crate_yellow</uri>
       <name>crate_yellow_002</name>
       <pose>-0.200000 0.325000 0.050000 0 0 0.000000</pose>
     </include>
-
-
     <include>
       <uri>model://crate_blue</uri>
       <name>crate_blue_003</name>
@@ -97,8 +98,7 @@
       <name>crate_yellow_004</name>
       <pose>-0.200000 0.425000 0.050000 0 0 0.000000</pose>
     </include>
-
-
+    <!-- groupe 2 -->
     <include>
       <uri>model://crate_yellow</uri>
       <name>crate_yellow_005</name>
@@ -119,6 +119,7 @@
       <name>crate_blue_008</name>
       <pose>-0.875000 0.475000 0.050000 0 0 0.000000</pose>
     </include>
+    <!-- groupe 3 -->
     <include>
       <uri>model://crate_yellow</uri>
       <name>crate_yellow_009</name>
@@ -139,6 +140,7 @@
       <name>crate_blue_012</name>
       <pose>-0.525000 1.375000 0.050000 0 0 -1.570796</pose>
     </include>
+    <!-- groupe 4 -->
     <include>
       <uri>model://crate_blue</uri>
       <name>crate_blue_013</name>
@@ -159,109 +161,90 @@
       <name>crate_yellow_016</name>
       <pose>0.275000 1.375000 0.050000 0 0 -1.570796</pose>
     </include>
-
-    <!-- Walls -->
-    <model name="wall_top">
-      <static>true</static>
-      <pose>0 1.525 0.2 0 0 0</pose>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <box>
-              <size>2.1 0.05 0.4</size>
-            </box>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <box>
-              <size>2.1 0.05 0.4</size>
-            </box>
-          </geometry>
-          <material>
-            <ambient>0.5 0.5 0.5 1</ambient>
-            <diffuse>0.5 0.5 0.5 1</diffuse>
-          </material>
-        </visual>
-      </link>
-    </model>
-
-    <model name="wall_bottom">
-      <static>true</static>
-      <pose>0 -1.525 0.2 0 0 0</pose>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <box>
-              <size>2.1 0.05 0.4</size>
-            </box>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <box>
-              <size>2.1 0.05 0.4</size>
-            </box>
-          </geometry>
-          <material>
-            <ambient>0.5 0.5 0.5 1</ambient>
-            <diffuse>0.5 0.5 0.5 1</diffuse>
-          </material>
-        </visual>
-      </link>
-    </model>
-
-    <model name="wall_left">
-      <static>true</static>
-      <pose>-1.025 0 0.2 0 0 0</pose>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <box>
-              <size>0.05 3.1 0.4</size>
-            </box>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <box>
-              <size>0.05 3.1 0.4</size>
-            </box>
-          </geometry>
-          <material>
-            <ambient>0.5 0.5 0.5 1</ambient>
-            <diffuse>0.5 0.5 0.5 1</diffuse>
-          </material>
-        </visual>
-      </link>
-    </model>
-
-    <model name="wall_right">
-      <static>true</static>
-      <pose>1.025 0 0.2 0 0 0</pose>
-      <link name="link">
-        <collision name="collision">
-          <geometry>
-            <box>
-              <size>0.05 3.1 0.4</size>
-            </box>
-          </geometry>
-        </collision>
-        <visual name="visual">
-          <geometry>
-            <box>
-              <size>0.05 3.1 0.4</size>
-            </box>
-          </geometry>
-          <material>
-            <ambient>0.5 0.5 0.5 1</ambient>
-            <diffuse>0.5 0.5 0.5 1</diffuse>
-          </material>
-        </visual>
-      </link>
-    </model>
-
-
+    <!-- groupe 5 -->
+    <include>
+      <uri>model://crate_blue</uri>
+      <name>crate_blue_015</name>
+      <pose>-0.200000 -0.275000 0.050000 0 0 0.000000</pose>
+    </include>
+    <include>
+      <uri>model://crate_yellow</uri>
+      <name>crate_yellow_017</name>
+      <pose>-0.200000 -0.325000 0.050000 0 0 0.000000</pose>
+    </include>
+    <include>
+      <uri>model://crate_blue</uri>
+      <name>crate_blue_016</name>
+      <pose>-0.200000 -0.375000 0.050000 0 0 0.000000</pose>
+    </include>
+    <include>
+      <uri>model://crate_yellow</uri>
+      <name>crate_yellow_018</name>
+      <pose>-0.200000 -0.425000 0.050000 0 0 0.000000</pose>
+    </include>
+    <!-- groupe 6 -->
+    <include>
+      <uri>model://crate_yellow</uri>
+      <name>crate_yellow_019</name>
+      <pose>-0.875000 -0.325000 0.050000 0 0 0.000000</pose>
+    </include>
+    <include>
+      <uri>model://crate_yellow</uri>
+      <name>crate_yellow_020</name>
+      <pose>-0.875000 -0.375000 0.050000 0 0 0.000000</pose>
+    </include>
+    <include>
+      <uri>model://crate_blue</uri>
+      <name>crate_blue_017</name>
+      <pose>-0.875000 -0.425000 0.050000 0 0 0.000000</pose>
+    </include>
+    <include>
+      <uri>model://crate_blue</uri>
+      <name>crate_blue_018</name>
+      <pose>-0.875000 -0.475000 0.050000 0 0 0.000000</pose>
+    </include>
+    <!-- groupe 7 -->
+    <include>
+      <uri>model://crate_yellow</uri>
+      <name>crate_yellow_021</name>
+      <pose>-0.675000 -1.375000 0.050000 0 0 -1.570796</pose>
+    </include>
+    <include>
+      <uri>model://crate_blue</uri>
+      <name>crate_blue_019</name>
+      <pose>-0.625000 -1.375000 0.050000 0 0 -1.570796</pose>
+    </include>
+    <include>
+      <uri>model://crate_yellow</uri>
+      <name>crate_yellow_022</name>
+      <pose>-0.575000 -1.375000 0.050000 0 0 -1.570796</pose>
+    </include>
+    <include>
+      <uri>model://crate_blue</uri>
+      <name>crate_blue_020</name>
+      <pose>-0.525000 -1.375000 0.050000 0 0 -1.570796</pose>
+    </include>
+    <!-- groupe 8 -->
+    <include>
+      <uri>model://crate_blue</uri>
+      <name>crate_blue_021</name>
+      <pose>0.125000 -1.375000 0.050000 0 0 -1.570796</pose>
+    </include>
+    <include>
+      <uri>model://crate_blue</uri>
+      <name>crate_blue_022</name>
+      <pose>0.175000 -1.375000 0.050000 0 0 -1.570796</pose>
+    </include>
+    <include>
+      <uri>model://crate_yellow</uri>
+      <name>crate_yellow_023</name>
+      <pose>0.225000 -1.375000 0.050000 0 0 -1.570796</pose>
+    </include>
+    <include>
+      <uri>model://crate_yellow</uri>
+      <name>crate_yellow_024</name>
+      <pose>0.275000 -1.375000 0.050000 0 0 -1.570796</pose>
+    </include>
 
   </world>
 </sdf>

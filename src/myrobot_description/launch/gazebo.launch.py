@@ -28,7 +28,12 @@ def generate_launch_description():
         name="world_name", 
         default_value="arena_world",
         description = "Name of the world file "
+    )
 
+    headless_arg = DeclareLaunchArgument(
+        name="headless",
+        default_value="true",
+        description="Whether to run Gazebo with GUI"
     )
 
     world_path = PathJoinSubstitution([
@@ -69,7 +74,8 @@ def generate_launch_description():
                 PythonLaunchDescriptionSource([os.path.join(
                     get_package_share_directory("ros_gz_sim"), "launch"), "/gz_sim.launch.py"]),
                 launch_arguments={
-                    "gz_args": PythonExpression(["'", world_path, " -v 4 -r'"])
+                    "gz_args": [world_path, " -v 4 -r "],
+                    "on_exit_shutdown": "True"
                 }.items()
              )
 
@@ -93,12 +99,15 @@ def generate_launch_description():
         ],
         remappings=[
             ('/imu', '/imu/out'),
+            ('/camera/image_raw', '/front_camera/image_raw'),
+            ('/camera/camera_info', '/front_camera/camera_info'),
         ]
     )
 
     return LaunchDescription([
         model_arg,
         world_name_arg,
+        headless_arg,
         gazebo_resource_path,
         robot_state_publisher_node,
         gazebo,
