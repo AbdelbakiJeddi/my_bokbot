@@ -1,7 +1,46 @@
-.vscode/
-src/.vscode/
+# Build artifacts
 build/
 install/
 log/
+
+# IDE settings
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# C++
+*.o
+*.a
+*.so.*
+*.dylib
+compile_commands.json
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Environment
+.env
+.venv
+venv/
+
+# Project-specific
+.remember/
+.qodo/
 SESSIONS.md
 Team_Guide.md

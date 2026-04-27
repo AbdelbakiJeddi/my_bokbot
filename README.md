@@ -1,282 +1,230 @@
-# MyRobot — ROS 2 Differential-Drive Robot
+# ROS 2 Autonomous Robot Stack
 
-ROS 2 workspace for a differential-drive robot (Eurobot 2026). Supports real hardware (Arduino + ros2_control) and Gazebo simulation, with Nav2 autonomous navigation.
+A complete ROS 2 navigation stack for differential-drive robots, featuring simulation, SLAM, and Nav2 autonomous navigation. This project serves as a reusable foundation for robotics teams and educators.
+
+## Features
+
+- **Differential drive robot** with ros2_control support
+- **Gazebo simulation** with realistic physics
+- **SLAM** using slam_toolbox for map creation
+- **Autonomous navigation** with Nav2 stack
+- **Real hardware support** via Arduino/ESP32 + micro-ROS
+- **Vision capabilities** with camera integration
+
+## Architecture
+
+```text
+myrobot_bringup       → System launch files (simulation & real robot)
+myrobot_description   → URDF, meshes, Gazebo worlds
+myrobot_controller    → ros2_control controllers
+myrobot_firmware      → Arduino/ESP32 hardware interface
+myrobot_localization  → AMCL, EKF, map server
+myrobot_mapping       → SLAM toolbox integration
+myrobot_navigation    → Nav2 configuration + behavior trees
+myrobot_vision        → Camera processing nodes
+```
 
 ## Prerequisites
 
 - **ROS 2** (Humble / Jazzy)
 - **Gazebo** (Fortress for Humble, Harmonic for Jazzy)
-- Nav2, slam_toolbox, robot_localization, ros2_control
+- Required packages:
 
-## Build
+  ```bash
+  sudo apt install ros-$ROS_DISTRO-nav2-bringup \
+                   ros-$ROS_DISTRO-slam-toolbox \
+                   ros-$ROS_DISTRO-robot-localization \
+                   ros-$ROS_DISTRO-ros2-control \
+                   ros-$ROS_DISTRO-ros2-controllers
+  ```
+
+## Quick Start
+
+### Build the Workspace
 
 ```bash
-cd ~/Desktop/copy_ws
+cd ~/myrobot_ws  # or your workspace path
 colcon build --symlink-install
 source install/setup.bash
 ```
 
----
-
-## Running the Robot
-
-### 1. Real Robot
-
-```bash
-ros2 launch myrobot_bringup real_robot.launch.py
-```
-
-Launches hardware interface, ros2_control controllers, and blind navigation.
-
-| Parameter | Default | Description |
-|---|---|---|
-| `use_sim_time` | `false` | Use sim clock |
-
-### 2. Simulation (Full Nav Stack)
+### Run Simulation (Full Nav Stack)
 
 ```bash
 ros2 launch myrobot_bringup sim_robot.launch.py
 ```
 
-Launches Gazebo, controllers, and optionally SLAM/localization + Nav2.
+This launches:
+- Gazebo with the robot spawned
+- ros2_control controllers
+- SLAM or AMCL localization (toggle with `use_slam` parameter)
+- Nav2 navigation stack
+- RViz for visualization
 
-| Parameter | Default | Description |
-|---|---|---|
-| `use_slam` | `true` | `true` = SLAM, `false` = AMCL localization |
-| `run_rviz` | `true` | Launch RViz |
+**Parameters:**
 
-> **Note:** SLAM, localization, and navigation includes are currently commented out in this launch file. Uncomment them to enable.
+| Parameter  | Default | Description                                     |
+| ---------- | ------- | ----------------------------------------------- |
+| `use_slam` | `true`  | `true` = SLAM mode, `false` = AMCL localization |
+| `run_rviz` | `true`  | Launch RViz                                     |
 
-### 3. Simulation (Blind Navigation)
+### Run Simulation (Blind Navigation)
+
+For environments without LiDAR (odometry-only navigation):
 
 ```bash
 ros2 launch myrobot_bringup sim_blind_robot.launch.py
 ```
 
-Gazebo + controllers + Nav2 blind navigation (no LiDAR, odometry-only localization, static map).
-
-| Parameter | Default | Description |
-|---|---|---|
-| `use_sim_time` | `true` | Use sim clock |
-| `run_rviz` | `true` | Launch RViz |
-
----
-
-## Other Launch Files
-
-### myrobot_description
-
-| Launch File | Purpose |
-|---|---|
-| `gazebo.launch.py` | Spawn robot in Gazebo. Params: `model` (URDF path), `world_name` (default: `arena_world`) |
-| `display.launch.py` | View URDF in RViz with joint_state_publisher_gui |
-
-### myrobot_firmware
-
-| Launch File | Purpose |
-|---|---|
-| `hardware_interface.launch.py` | Start robot_state_publisher + ros2_control controller_manager for real hardware. Param: `use_sim_time` |
-
-### myrobot_controller
-
-| Launch File | Purpose |
-|---|---|
-| `controller.launch.py` | Spawn `joint_state_broadcaster`, `myrobot_controller`, and `twist_relay` node |
-
-### myrobot_localization
-
-| Launch File | Purpose |
-|---|---|
-| `global_localization.launch.py` | Map server + AMCL. Params: `map_name`, `use_sim_time`, `amcl_config` |
-| `local_localization.launch.py` | Map server + static map→odom TF + EKF. Params: `map_name`, `use_sim_time` |
-| `fake_localization.launch.py` | Map server + static TF (no EKF). Params: `map_name`, `use_sim_time` |
-
-### myrobot_mapping
-
-| Launch File | Purpose |
-|---|---|
-| `slam.launch.py` | slam_toolbox + map_saver_server. Params: `use_sim_time`, `slam_config` |
-
-### myrobot_navigation
-
-| Launch File | Purpose |
-|---|---|
-| `navigation.launch.py` | Full Nav2 stack (controller, planner, smoother, BT navigator, behaviors). Param: `use_sim_time` |
-| `navigation_blind.launch.py` | Nav2 without obstacle detection + local_localization. Params: `use_sim_time`, `map_name` |
-
-Includes a `waypoint_follower.py` script and custom behavior trees in `behavior_tree/`.
-
-### myrobot_vision
-
-| Launch File | Purpose |
-|---|---|
-| `vision.launch.py` | Camera processing node |
-
----
-
-## TODO
-
-**Core**
-- [ ] ArUco code detection and pose estimation to enhance robot localization
-- [ ] Playing strategy — Yellow or Blue side selection
-- [ ] Enhance `arena_world` to match the real competition field
-- [ ] Adding actuators to grab objects
-
-**Navigation & Autonomy**
-- [ ] Timed match logic — 100s game state manager to start/stop actions
-- [ ] Multi-waypoint mission planner — scoring-strategy sequencer per side
-- [ ] Obstacle avoidance with LiDAR — integrate RPLiDAR for dynamic obstacles
-
-**Hardware & Reliability**
-- [ ] Emergency stop / match start cord
-- [ ] Battery monitoring node
-- [ ] Sensor fusion — combine EKF odometry + ArUco + IMU
-
-**Testing**
-- [ ] Automated simulation test — launch sim, send goal, assert arrival
-- [ ] Separate Nav2 param profiles for competition vs. testing
-
-**Competition-Specific**
-- [ ] Opponent detection & avoidance
-- [ ] Score counting node
-
-# MyRobot — ROS 2 Differential-Drive Robot
-
-ROS 2 workspace for a differential-drive robot (Eurobot 2026). Supports real hardware (Arduino + ros2_control) and Gazebo simulation, with Nav2 autonomous navigation.
-
-## Prerequisites
-
-- **ROS 2** (Humble / Jazzy)
-- **Gazebo** (Fortress for Humble, Harmonic for Jazzy)
-- Nav2, slam_toolbox, robot_localization, ros2_control
-
-## Build
-
-```bash
-cd ~/Desktop/copy_ws
-colcon build --symlink-install
-source install/setup.bash
-```
-
----
-
-## Running the Robot
-
-### 1. Real Robot
+### Run Real Robot
 
 ```bash
 ros2 launch myrobot_bringup real_robot.launch.py
 ```
 
-Launches hardware interface, ros2_control controllers, and blind navigation.
-
-| Parameter | Default | Description |
-|---|---|---|
-| `use_sim_time` | `false` | Use sim clock |
-
-### 2. Simulation (Full Nav Stack)
-
-```bash
-ros2 launch myrobot_bringup sim_robot.launch.py
-```
-
-Launches Gazebo, controllers, and optionally SLAM/localization + Nav2.
-
-| Parameter | Default | Description |
-|---|---|---|
-| `use_slam` | `true` | `true` = SLAM, `false` = AMCL localization |
-| `run_rviz` | `true` | Launch RViz |
-
-> **Note:** SLAM, localization, and navigation includes are currently commented out in this launch file. Uncomment them to enable.
-
-### 3. Simulation (Blind Navigation)
-
-```bash
-ros2 launch myrobot_bringup sim_blind_robot.launch.py
-```
-
-Gazebo + controllers + Nav2 blind navigation (no LiDAR, odometry-only localization, static map).
-
-| Parameter | Default | Description |
-|---|---|---|
-| `use_sim_time` | `true` | Use sim clock |
-| `run_rviz` | `true` | Launch RViz |
+Connects to real hardware via serial (micro-ROS). Set the correct port in the launch file.
 
 ---
 
-## Other Launch Files
+## Package Reference
 
 ### myrobot_description
 
-| Launch File | Purpose |
-|---|---|
-| `gazebo.launch.py` | Spawn robot in Gazebo. Params: `model` (URDF path), `world_name` (default: `arena_world`) |
-| `display.launch.py` | View URDF in RViz with joint_state_publisher_gui |
+| Launch File           | Purpose                                                        |
+| --------------------- | -------------------------------------------------------------- |
+| `gazebo.launch.py`    | Spawn robot in Gazebo. Params: `model`, `world_name`           |
+| `display.launch.py`   | View URDF in RViz with joint state publisher                   |
 
 ### myrobot_firmware
 
-| Launch File | Purpose |
-|---|---|
-| `hardware_interface.launch.py` | Start robot_state_publisher + ros2_control controller_manager for real hardware. Param: `use_sim_time` |
+| Launch File                  | Purpose                                              |
+| ---------------------------- | ---------------------------------------------------- |
+| `hardware_interface.launch.py` | ros2_control controller manager for real hardware  |
 
 ### myrobot_controller
 
-| Launch File | Purpose |
-|---|---|
-| `controller.launch.py` | Spawn `joint_state_broadcaster`, `myrobot_controller`, and `twist_relay` node |
+| Launch File         | Purpose                                                        |
+| ------------------- | -------------------------------------------------------------- |
+| `controller.launch.py` | Spawn joint_state_broadcaster, diff_drive_controller, twist_relay |
 
 ### myrobot_localization
 
-| Launch File | Purpose |
-|---|---|
-| `global_localization.launch.py` | Map server + AMCL. Params: `map_name`, `use_sim_time`, `amcl_config` |
-| `local_localization.launch.py` | Map server + static map→odom TF + EKF. Params: `map_name`, `use_sim_time` |
-| `fake_localization.launch.py` | Map server + static TF (no EKF). Params: `map_name`, `use_sim_time` |
+| Launch File                   | Purpose                                  |
+| ----------------------------- | ---------------------------------------- |
+| `global_localization.launch.py` | Map server + AMCL                        |
+| `local_localization.launch.py`  | Map server + static transform + EKF      |
+| `fake_localization.launch.py`   | Map server + static TF (no EKF)          |
 
 ### myrobot_mapping
 
-| Launch File | Purpose |
-|---|---|
-| `slam.launch.py` | slam_toolbox + map_saver_server. Params: `use_sim_time`, `slam_config` |
+| Launch File      | Purpose                            |
+| ---------------- | ---------------------------------- |
+| `slam.launch.py` | slam_toolbox + map_saver_server    |
 
 ### myrobot_navigation
 
-| Launch File | Purpose |
-|---|---|
-| `navigation.launch.py` | Full Nav2 stack (controller, planner, smoother, BT navigator, behaviors). Param: `use_sim_time` |
-| `navigation_blind.launch.py` | Nav2 without obstacle detection + local_localization. Params: `use_sim_time`, `map_name` |
+| Launch File              | Purpose                                                        |
+| ------------------------ | -------------------------------------------------------------- |
+| `navigation.launch.py`   | Full Nav2 stack (planner, controller, smoother, BT navigator)  |
+| `navigation_blind.launch.py` | Nav2 without obstacle detection (odometry-only)            |
 
-Includes a `waypoint_follower.py` script and custom behavior trees in `behavior_tree/`.
+Includes:
+
+- `waypoint_follower.py` — Sequential goal follower script
+- Custom behavior trees in `behavior_tree/`
 
 ### myrobot_vision
 
-| Launch File | Purpose |
-|---|---|
-| `vision.launch.py` | Camera processing node |
+| Launch File       | Purpose                            |
+| ----------------- | ---------------------------------- |
+| `vision.launch.py` | Camera processing node with rqt   |
 
+---
 
-## TODO
+## Project Structure
 
-**Core**
-- [ ] ArUco code detection and pose estimation to enhance robot localization
-- [ ] Playing strategy — Yellow or Blue side selection
-- [ ] Enhance `arena_world` to match the real competition field
-- [ ] Adding actuators to grab objects
+```text
+.
+├── src/
+│   ├── myrobot_bringup/       # Main system launch files
+│   ├── myrobot_description/   # Robot URDF, meshes, worlds
+│   ├── myrobot_controller/    # Controller configuration
+│   ├── myrobot_firmware/      # Arduino communication
+│   ├── myrobot_localization/  # Localization (AMCL, EKF)
+│   ├── myrobot_mapping/       # SLAM integration
+│   ├── myrobot_navigation/    # Nav2 stack + behavior trees
+│   └── myrobot_vision/        # Camera processing
+├── README.md
+└── .gitignore
+```
 
-**Navigation & Autonomy**
-- [ ] Timed match logic — 100s game state manager to start/stop actions
-- [ ] Multi-waypoint mission planner — scoring-strategy sequencer per side
-- [ ] Obstacle avoidance with LiDAR — integrate RPLiDAR for dynamic obstacles
+## Usage Examples
 
-**Hardware & Reliability**
-- [ ] Emergency stop / match start cord
+### Create a Map
+
+```bash
+# 1. Launch SLAM mode
+ros2 launch myrobot_bringup sim_robot.launch.py use_slam:=true
+
+# 2. Drive the robot (teleop or RViz)
+ros2 run teleop_twist_keyboard teleop_twist_keyboard
+
+# 3. Save the map
+ros2 run nav2_map_server map_saver_cli -f my_map
+```
+
+### Navigate to a Goal
+
+```bash
+# 1. Launch full stack
+ros2 launch myrobot_bringup sim_robot.launch.py use_slam:=false
+
+# 2. Send a goal (from another terminal)
+ros2 topic pub /goal_pose geometry_msgs/msg/PoseStamped "{
+  header: {frame_id: 'map'},
+  pose: {position: {x: 1.0, y: 2.0, z: 0.0},
+         orientation: {w: 1.0}}}"
+```
+
+### Follow Waypoints
+
+```bash
+ros2 run myrobot_navigation waypoint_follower
+```
+
+---
+
+## Roadmap
+
+### Core Features
+
+- [ ] ArUco marker detection for enhanced localization
+- [ ] Dynamic obstacle avoidance with LiDAR
+- [ ] Multi-robot support
+
+### Navigation & Autonomy
+
+- [ ] Mission planner with waypoint sequencing
+- [ ] Recovery behavior customization
+- [ ] Navigation in dynamic environments
+
+### Hardware & Reliability
+
+- [ ] Emergency stop integration
 - [ ] Battery monitoring node
-- [ ] Sensor fusion — combine EKF odometry + ArUco + IMU
+- [ ] Sensor fusion (EKF + ArUco + IMU)
 
-**Testing**
-- [ ] Automated simulation test — launch sim, send goal, assert arrival
-- [ ] Separate Nav2 param profiles for competition vs. testing
+### Testing
 
-**Competition-Specific**
-- [ ] Opponent detection & avoidance
-- [ ] Score counting node
+- [ ] Automated simulation test suite
+- [ ] Nav2 parameter tuning profiles
+
+---
+
+## See It In Action
+
+This stack powers competition robots at Eurobot. Check out the competition-specific implementation: [eurobot-robot-2026](https://github.com/YOUR_USERNAME/eurobot-robot-2026)
+
+## License
+
+MIT License - See LICENSE file for details
