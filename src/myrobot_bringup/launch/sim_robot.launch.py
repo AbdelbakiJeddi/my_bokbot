@@ -9,10 +9,14 @@ from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
 
-
+    use_sim_time_arg = DeclareLaunchArgument(
+        "use_sim_time",
+        default_value="true",
+        description = "Use simulation time "
+    )
     use_slam_arg = DeclareLaunchArgument(
         "use_slam",
-        default_value="true",
+        default_value="false",
         description="Whether to run SLAM (if false, use localization stack)"
     )
 
@@ -24,7 +28,7 @@ def generate_launch_description():
 
     run_rviz = LaunchConfiguration('run_rviz')
     use_slam = LaunchConfiguration("use_slam")
-
+    use_sim_time = LaunchConfiguration("use_sim_time")
 
     gazebo = IncludeLaunchDescription(
         os.path.join(
@@ -39,23 +43,7 @@ def generate_launch_description():
             get_package_share_directory("myrobot_controller"),
             "launch",
             "controller.launch.py"
-        ),
-        launch_arguments={
-            "use_sim_time": "True"
-        }.items()
-    )
-
-    rviz = Node(
-        package="rviz2",
-        executable="rviz2",
-        name="rviz2",
-        output="screen",
-        arguments=["-d", os.path.join(
-            get_package_share_directory("myrobot_bringup"),
-            "rviz",
-            "nav2_default_view.rviz"
-        )],
-        condition=IfCondition(run_rviz)
+        )
     )
 
     localization = IncludeLaunchDescription(
@@ -83,14 +71,28 @@ def generate_launch_description():
             "navigation.launch.py"
         ),
     )
-        
+
+    rviz = Node(
+        package="rviz2",
+        executable="rviz2",
+        name="rviz2",
+        output="screen",
+        arguments=["-d", os.path.join(
+            get_package_share_directory("myrobot_bringup"),
+            "rviz",
+            "nav2_default_view.rviz"
+        )],
+        parameters=[{"use_sim_time": True}],
+        condition=IfCondition(run_rviz)
+    )    
     return LaunchDescription([
+        use_sim_time_arg,
         run_rviz_arg,
         use_slam_arg,
         gazebo,
         controller,
-        #slam,
-        #localization, 
-        #navigation,
+        slam,
+        localization, 
+        navigation,
         rviz
     ])

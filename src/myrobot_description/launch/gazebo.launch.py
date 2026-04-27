@@ -25,21 +25,16 @@ def generate_launch_description():
     )
 
     world_name_arg = DeclareLaunchArgument(
-        name="world_name", 
-        default_value="arena_world",
+        name="world_name",
+        default_value="small_house",
         description = "Name of the world file "
     )
 
-    headless_arg = DeclareLaunchArgument(
-        name="headless",
-        default_value="true",
-        description="Whether to run Gazebo with GUI"
-    )
 
     world_path = PathJoinSubstitution([
             myrobot_description,
             "worlds",
-            PythonExpression(["'", LaunchConfiguration("world_name"), ".sdf'"])
+            PythonExpression(expression=["'", LaunchConfiguration("world_name"), "'", " + '.world'"])
         ]
     )
 
@@ -51,14 +46,9 @@ def generate_launch_description():
         model_path
         )
 
-    ros_distro = os.environ["ROS_DISTRO"]
-    is_ignition = "True" if ros_distro == "humble" else "False"
-
     robot_description = ParameterValue(Command([
             "xacro ",
-            LaunchConfiguration("model"),
-            " is_ignition:=",
-            is_ignition
+            LaunchConfiguration("model")
         ]),
         value_type=str
     )
@@ -74,8 +64,7 @@ def generate_launch_description():
                 PythonLaunchDescriptionSource([os.path.join(
                     get_package_share_directory("ros_gz_sim"), "launch"), "/gz_sim.launch.py"]),
                 launch_arguments={
-                    "gz_args": [world_path, " -v 4 -r "],
-                    "on_exit_shutdown": "True"
+                    "gz_args": PythonExpression(["'", world_path, " -v 4 -r'"])
                 }.items()
              )
 
@@ -84,7 +73,25 @@ def generate_launch_description():
         executable="create",
         output="screen",
         arguments=["-topic", "robot_description",
-                   "-name", "my_robot"],
+                   "-name", "my_robot"]
+    )
+
+    imu_out_topic_arg = DeclareLaunchArgument(
+        name="imu_out_topic",
+        default_value="/imu/out",
+        description="IMU topic to remap from /imu"
+    )
+
+    camera_image_topic_arg = DeclareLaunchArgument(
+        name="camera_image_topic",
+        default_value="/front_camera/image_raw",
+        description="Camera image topic to remap from /camera/image_raw"
+    )
+
+    camera_info_topic_arg = DeclareLaunchArgument(
+        name="camera_info_topic",
+        default_value="/front_camera/camera_info",
+        description="Camera info topic to remap from /camera/camera_info"
     )
 
     gz_ros2_bridge = Node(
@@ -95,19 +102,21 @@ def generate_launch_description():
             "/imu@sensor_msgs/msg/Imu[gz.msgs.IMU",
             "/scan@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan",
             '/camera/image_raw@sensor_msgs/msg/Image@gz.msgs.Image',
-            '/camera/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo',
+            '/camera/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo'
         ],
         remappings=[
-            ('/imu', '/imu/out'),
-            ('/camera/image_raw', '/front_camera/image_raw'),
-            ('/camera/camera_info', '/front_camera/camera_info'),
+            ('/imu', LaunchConfiguration('imu_out_topic')),
+            ('/camera/image_raw', LaunchConfiguration('camera_image_topic')),
+            ('/camera/camera_info', LaunchConfiguration('camera_info_topic'))
         ]
     )
 
     return LaunchDescription([
         model_arg,
         world_name_arg,
-        headless_arg,
+        imu_out_topic_arg,
+        camera_image_topic_arg,
+        camera_info_topic_arg,
         gazebo_resource_path,
         robot_state_publisher_node,
         gazebo,

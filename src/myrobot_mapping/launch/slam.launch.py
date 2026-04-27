@@ -11,10 +11,7 @@ def generate_launch_description():
     use_sim_time = LaunchConfiguration("use_sim_time")
     slam_config = LaunchConfiguration("slam_config")
 
-    ros_distro = os.environ["ROS_DISTRO"]
-    lifecycle_nodes = ["map_saver_server"]
-    if ros_distro != "humble":
-        lifecycle_nodes.append("slam_toolbox")
+    lifecycle_nodes = ["map_saver_server", "slam_toolbox"]
 
     use_sim_time_arg = DeclareLaunchArgument(
         "use_sim_time",
@@ -41,8 +38,8 @@ def generate_launch_description():
     parameters=[
         {"save_map_timeout": 5.0},
         {"use_sim_time": use_sim_time},
-        {"free_thresh_default": 0.196},
-        {"occupied_thresh_default": 0.65},
+        {"free_thresh_default": "0.196"},
+        {"occupied_thresh_default": "0.65"},
     ],
 )
 

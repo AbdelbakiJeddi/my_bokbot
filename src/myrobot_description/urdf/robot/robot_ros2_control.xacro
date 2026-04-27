@@ -3,30 +3,11 @@
 
     <ros2_control name="RobotSystem" type="system">
 
-
-        <!-- ros2_control Real Robot -->
-        <xacro:unless value="$(arg is_sim)">
-            <hardware>
-                <plugin>myrobot_firmware/MyRobotInterface</plugin>
-                <param name="port">/dev/ttyUSB0</param>
-            </hardware>
-        </xacro:unless>
-
         <!-- ros2_control Gazebo -->
         <xacro:if value="$(arg is_sim)">
-            <!-- ROS 2 Humble -->
-            <xacro:if value="$(arg is_ignition)">
-                <hardware>
-                    <plugin>ign_ros2_control/IgnitionSystem</plugin>
-                </hardware>
-            </xacro:if>
-
-            <!-- ROS 2 Iron or above -->
-            <xacro:unless value="$(arg is_ignition)">
-                <hardware>
-                    <plugin>gz_ros2_control/GazeboSimSystem</plugin>
-                </hardware>
-            </xacro:unless>
+            <hardware>
+                <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+            </hardware>
         </xacro:if>
 
 

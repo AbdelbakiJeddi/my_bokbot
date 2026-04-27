@@ -15,7 +15,7 @@ def generate_launch_description():
 
     map_name_arg = DeclareLaunchArgument(
         "map_name",
-        default_value="eurobot_2026",
+        default_value="small_house",
         description = "Name of the map to load "
     )
 
@@ -38,7 +38,7 @@ def generate_launch_description():
     map_path = PathJoinSubstitution([
         get_package_share_directory("myrobot_mapping"),
         "maps",
-        "eurobot_2026.yaml"
+        "small_house.yaml"
     ])
     
     nav2_map_server = Node(
@@ -60,7 +60,7 @@ def generate_launch_description():
         emulate_tty=True,
         parameters=[
             amcl_config,
-            {"use_sim_time": use_sim_time},
+            {"use_sim_time": use_sim_time}
         ],
     )
 

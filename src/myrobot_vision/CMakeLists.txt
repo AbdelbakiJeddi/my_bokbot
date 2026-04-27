@@ -10,18 +10,11 @@ find_package(ament_cmake REQUIRED)
 
 
 install(
-  DIRECTORY launch config
+  DIRECTORY launch 
   DESTINATION share/${PROJECT_NAME}
 )
 
-install(PROGRAMS
-  myrobot_vision/aruco_detector.py
-  myrobot_vision/detected_crates_tf.py
-  myrobot_vision/relocalizer.py
-  myrobot_vision/sequence_manager.py
-  myrobot_vision/object_detection.py
-  DESTINATION lib/${PROJECT_NAME}
-)
+
 
 
 ament_package()
