@@ -35,10 +35,10 @@ This repository provides a modular ROS 2 stack for a differential-drive robot wi
 
 | Step | Screenshot |
 |------|------------|
-| Initialization | <img src="docs/initialization.png" width="300" /> |
-| Path Calculated | <img src="docs/new_path_calc.png" width="300" /> |
-| Follow Path | <img src="docs/follow_path.png" width="300" /> |
-| Goal Reached | <img src="docs/goal_reached.png" width="300" /> |
+| Initialization | <img src="docs/initialization.png" width="500" height="500"/> |
+| Path Calculated | <img src="docs/new_path_calc.png" width="700" /> |
+| Follow Path | <img src="docs/follow_path.png" width="500"  height="500" /> |
+| Goal Reached | <img src="docs/goal_reached.png" width="500"  height="500" /> |
 
 **Navigation Demo**
 
