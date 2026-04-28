@@ -31,6 +31,19 @@ This repository provides a modular ROS 2 stack for a differential-drive robot wi
 - **Nav2 navigation** — autonomous goal navigation with behavior trees
 - **Demo presentation** — (link placeholder)
 
+## Demo
+
+| Step | Screenshot |
+|------|------------|
+| Initialization | <img src="docs/initialization.png" width="300" /> |
+| Path Calculated | <img src="docs/new_path_calc.png" width="300" /> |
+| Follow Path | <img src="docs/follow_path.png" width="300" /> |
+| Goal Reached | <img src="docs/goal_reached.png" width="300" /> |
+
+**Navigation Demo**
+
+<img src="docs/demo.gif" width="600" />
+
 ## Quick Start
 
 ### Build
@@ -47,13 +60,6 @@ source install/setup.bash
 ros2 launch myrobot_bringup sim_robot.launch.py
 ```
 
-Launch args:
-
-| Argument | Default | Description |
-|----------|---------|-------------|
-| `use_sim_time` | `true` | Use simulation clock |
-| `use_slam` | `true` | Run SLAM (true) or AMCL localization (false) |
-| `run_rviz` | `true` | Launch RViz2 |
 
 ### Run Display (URDF only, no simulation)
 
@@ -155,9 +161,18 @@ src/
         └── vision_settings.yaml
 ```
 
+
+## Credits
+
+This stack builds on open-source ROS 2 projects:
+
+- [Articu-Bot](https://github.com/joshnewans/articubot_one.git) — Articulated Bot
+- [Bumber-Bot](https://github.com/AntoBrandi/Bumper-Bot.git) — AntoBrandi Open Source Reources
+- [Nav2](https://github.com/Navigation2/nav2) — autonomous navigation stack
+
+
 ## Future Work
 
 - Real robot bringup with micro-ROS hardware interface
 - Additional sensor integration (depth camera, additional lidars)
-- Multi-robot coordination
 - SLAM accuracy improvements with loop closure tuning
